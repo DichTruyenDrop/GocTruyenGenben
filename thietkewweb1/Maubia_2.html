@@ -430,94 +430,16 @@ a { color: var(--text-main); text-decoration: none; }
         </div>
 
         <div class="popular-slider-wrapper">
-          <div class="popular-slider-container" id="popularSlider">
-            <!-- Item 1 -->
-            <div class="popular-card">
-              <div class="popular-cover">
-                <span class="badge-new">NEW</span>
-                <img src="https://picsum.photos/140/190?random=101" alt="Polar Night">
-              </div>
-              <div class="popular-info">
-                <h3 class="popular-title"><a href="chitiet.html">Polar Night: Afterfall</a></h3>
-                <div class="popular-date">October 1, 2026</div>
-                <div class="popular-chapters">
-                  <a href="doctruyen.html?chap=0" class="chip-chap">Chapter 0</a>
-                </div>
-              </div>
-            </div>
-
-            <!-- Item 2 -->
-            <div class="popular-card">
-              <div class="popular-cover">
-                <span class="badge-new">NEW</span>
-                <img src="https://picsum.photos/140/190?random=102" alt="A Girl Clumsy">
-              </div>
-              <div class="popular-info">
-                <h3 class="popular-title"><a href="chitiet.html">A Girl Clumsy With Her Words</a></h3>
-                <div class="popular-date">September 30, 2026</div>
-                <div class="popular-chapters">
-                  <a href="doctruyen.html?chap=5" class="chip-chap">Chapter 5</a>
-                </div>
-              </div>
-            </div>
-
-            <!-- Item 3 -->
-            <div class="popular-card">
-              <div class="popular-cover">
-                <span class="badge-new">NEW</span>
-                <img src="https://picsum.photos/140/190?random=103" alt="Starting Over">
-              </div>
-              <div class="popular-info">
-                <h3 class="popular-title"><a href="chitiet.html">Starting Over: Strongest Dungeon Streamer!</a></h3>
-                <div class="popular-date">September 30, 2026</div>
-                <div class="popular-chapters">
-                  <a href="doctruyen.html?chap=1" class="chip-chap">Chapter 1</a>
-                </div>
-              </div>
-            </div>
-
-            <!-- Item 4 -->
-            <div class="popular-card">
-              <div class="popular-cover">
-                <span class="badge-new">NEW</span>
-                <img src="https://picsum.photos/140/190?random=104" alt="Salaryman">
-              </div>
-              <div class="popular-info">
-                <h3 class="popular-title"><a href="chitiet.html">Salaryman Eats In Another World</a></h3>
-                <div class="popular-date">September 30, 2026</div>
-                <div class="popular-chapters">
-                  <a href="doctruyen.html?chap=2" class="chip-chap">Chapter 2</a>
-                </div>
-              </div>
-            </div>
-          </div>
+          <!-- ĐÃ XÓA HẾT TRUYỆN MẪU -> JS SẼ TỰ ĐỘNG ĐỔ DỮ LIỆU TỪ SUPABASE VÀO ĐÂY -->
+          <div class="popular-slider-container" id="popularSlider"></div>
         </div>
       </div>
 
       <!-- LATEST MANGA GRID -->
       <div class="section-title-plain">LATEST MANGA UPDATES</div>
 
-      <div class="latest-grid">
-        <div class="manga-card">
-          <div class="manga-img-box">
-            <span class="badge-hot-red">HOT</span>
-            <a href="chitiet.html"><img src="https://picsum.photos/200/280?random=10" alt="Bìa"></a>
-          </div>
-          <a href="chitiet.html" class="manga-title">Sha-MONEY-ism</a>
-          <div class="rating-stars">★★★★★</div>
-          <div class="chap-list-item"><a href="doctruyen.html?chap=61">Chương 61</a><span class="tag-new-small">MỚI</span></div>
-        </div>
-
-        <div class="manga-card">
-          <div class="manga-img-box">
-            <span class="badge-hot-red">HOT</span>
-            <a href="chitiet.html"><img src="https://picsum.photos/200/280?random=11" alt="Bìa"></a>
-          </div>
-          <a href="chitiet.html" class="manga-title">Global Job Change</a>
-          <div class="rating-stars">★★★★★</div>
-          <div class="chap-list-item"><a href="doctruyen.html?chap=13">Chương 13</a><span class="tag-new-small">MỚI</span></div>
-        </div>
-      </div>
+      <!-- ĐÃ XÓA HẾT TRUYỆN MẪU -> JS SẼ TỰ ĐỘNG ĐỔ DỮ LIỆU TỪ SUPABASE VÀO ĐÂY -->
+      <div class="latest-grid" id="latestGrid"></div>
 
       <button class="load-more-btn">TẢI THÊM...</button>
     </div>
@@ -529,13 +451,8 @@ a { color: var(--text-main); text-decoration: none; }
 
       <div class="top-day-widget">
         <span class="top-day-btn">Top Day</span>
-        <div class="top-item">
-          <img src="https://picsum.photos/80/100?random=20" alt="Bìa">
-          <div class="top-item-info">
-            <a href="chitiet.html" class="top-item-title">The Three Lustful Pigs</a>
-            <div style="margin-top:4px;"><a href="doctruyen.html?chap=5" class="top-chap-link">Chương 5</a></div>
-          </div>
-        </div>
+        <!-- JS SẼ ĐỔ TOP TRUYỆN TỪ SUPABASE VÀO ĐÂY -->
+        <div id="topDayContainer"></div>
       </div>
     </div>
   </div>
@@ -660,9 +577,9 @@ a { color: var(--text-main); text-decoration: none; }
 
   <!-- JAVASCRIPT GIAO DIỆN VÀ SUPABASE -->
   <script type="text/javascript">
-    /* 1. KHỞI TẠO SUPABASE CLIENT (Đã dán Publishable Key & URL thực tế) */
+    /* 1. KHỞI TẠO SUPABASE CLIENT */
     const SUPABASE_URL = 'sb_publishable_qGm5_VWsQHQ07JKP6E5KWA_ufi_4EHe';
-    const SUPABASE_KEY = 'sb_secret_WJy3JVkXsLUYk0rJxhMu5A_ciuyKgDp'; // Đã cập nhật theo Publishable key
+    const SUPABASE_KEY = 'sb_secret_WJy3JVkXsLUYk0rJxhMu5A_ciuyKgDp'; 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     /* 2. CÁC HÀM XỬ LÝ GIAO DIỆN */
@@ -709,7 +626,90 @@ a { color: var(--text-main); text-decoration: none; }
       }
     }
 
-    /* 3. SEARCH LIVE WITH SUPABASE */
+    /* 3. TẢI DỮ LIỆU TỪ BẢNG "Truyện" LÊN GIAO DIỆN */
+    async function loadTruyenFromSupabase() {
+      try {
+        const { data: truyenList, error } = await supabaseClient
+          .from('Truyện')
+          .select('*');
+
+        if (error) throw error;
+
+        const popularSlider = document.getElementById('popularSlider');
+        const latestGrid = document.getElementById('latestGrid');
+        const topDayContainer = document.getElementById('topDayContainer');
+
+        if (!truyenList || truyenList.length === 0) {
+          latestGrid.innerHTML = '<p style="grid-column: 1/-1; color: var(--text-sub);">Chưa có truyện nào trong cơ sở dữ liệu.</p>';
+          return;
+        }
+
+        // Clean container trước khi render
+        popularSlider.innerHTML = '';
+        latestGrid.innerHTML = '';
+        topDayContainer.innerHTML = '';
+
+        truyenList.forEach((item, index) => {
+          // Render vào POPULAR SLIDER
+          const popularHTML = `
+            <div class="popular-card">
+              <div class="popular-cover">
+                <span class="badge-new">NEW</span>
+                <a href="chitiet.html?id=${item.id}">
+                  <img src="${item.anh_bia || 'https://picsum.photos/140/190'}" alt="${item.ten_truyen}">
+                </a>
+              </div>
+              <div class="popular-info">
+                <h3 class="popular-title"><a href="chitiet.html?id=${item.id}">${item.ten_truyen}</a></h3>
+                <div class="popular-date">Mới cập nhật</div>
+                <div class="popular-chapters">
+                  <a href="doctruyen.html?id=${item.id}" class="chip-chap">Đọc ngay</a>
+                </div>
+              </div>
+            </div>
+          `;
+          popularSlider.innerHTML += popularHTML;
+
+          // Render vào LATEST GRID
+          const gridHTML = `
+            <div class="manga-card">
+              <div class="manga-img-box">
+                <span class="badge-hot-red">HOT</span>
+                <a href="chitiet.html?id=${item.id}">
+                  <img src="${item.anh_bia || 'https://picsum.photos/200/280'}" alt="${item.ten_truyen}">
+                </a>
+              </div>
+              <a href="chitiet.html?id=${item.id}" class="manga-title">${item.ten_truyen}</a>
+              <div class="rating-stars">★★★★★</div>
+              <div class="chap-list-item">
+                <a href="doctruyen.html?id=${item.id}">Đọc ngay</a>
+                <span class="tag-new-small">MỚI</span>
+              </div>
+            </div>
+          `;
+          latestGrid.innerHTML += gridHTML;
+
+          // Render phần Top Day ở Sidebar (Lấy 3 truyện đầu tiên)
+          if (index < 3) {
+            const topHTML = `
+              <div class="top-item">
+                <img src="${item.anh_bia || 'https://picsum.photos/80/100'}" alt="${item.ten_truyen}">
+                <div class="top-item-info">
+                  <a href="chitiet.html?id=${item.id}" class="top-item-title">${item.ten_truyen}</a>
+                  <div style="margin-top:4px;"><a href="doctruyen.html?id=${item.id}" class="top-chap-link">Đọc ngay</a></div>
+                </div>
+              </div>
+            `;
+            topDayContainer.innerHTML += topHTML;
+          }
+        });
+
+      } catch (err) {
+        console.error("Lỗi lấy danh sách truyện từ Supabase:", err);
+      }
+    }
+
+    /* 4. SEARCH LIVE WITH SUPABASE */
     const searchToggleBtn = document.getElementById('searchToggleBtn');
     const searchBarWrapper = document.getElementById('searchBarWrapper');
     const searchInput = document.getElementById('searchInput');
@@ -780,7 +780,7 @@ a { color: var(--text-main); text-decoration: none; }
       }
     });
 
-    /* 4. MODAL AUTH & LOGIC CHUYỂN ĐỔI FORM */
+    /* 5. MODAL AUTH & LOGIC CHUYỂN ĐỔI FORM */
     function openAuthModal(type = 'signin') {
       document.getElementById('authModalOverlay').style.display = 'flex';
       switchForm(type);
@@ -796,9 +796,10 @@ a { color: var(--text-main); text-decoration: none; }
       document.getElementById('formLost').style.display = (type === 'lost') ? 'block' : 'none';
     }
 
-    /* 5. LOGIC SUPABASE AUTH (SIGN IN / SIGN UP / RESET / SIGN OUT) */
+    /* 6. LOGIC SUPABASE AUTH (SIGN IN / SIGN UP / RESET / SIGN OUT) */
     window.addEventListener('DOMContentLoaded', async () => {
       checkUserSession();
+      loadTruyenFromSupabase(); // Load dữ liệu truyện thực tế khi trang mở lên
     });
 
     async function checkUserSession() {
