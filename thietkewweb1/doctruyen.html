@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đọc Truyện - Genben Manga</title>
+<!-- Supabase JS Client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style type="text/css">
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+:root {
+  --bg-main: #14131d;
+  --bg-header: #1c1b29;
+  --bg-card: #1c1b29;
+  --bg-btn: #252336;
+  --border-color: #282638;
+  --text-main: #ffffff;
+  --text-sub: #a5a5b5;
+  --accent-color: #6c5ce7;
+}
+
+body { background-color: var(--bg-main); color: var(--text-main); overflow-x: hidden; }
+a { color: var(--text-main); text-decoration: none; }
+
+/* HEADER */
+.header-top { background-color: var(--bg-header); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+.logo img { height: 32px; vertical-align: middle; }
+.nav-top a { font-weight: 700; font-size: 13px; color: var(--text-sub); text-transform: uppercase; }
+
+/* BREADCRUMB & TITLE */
+.reader-container { max-width: 1000px; margin: 0 auto; padding: 15px; }
+.breadcrumb { font-size: 12px; color: var(--text-sub); margin-bottom: 10px; text-align: center; }
+.breadcrumb a { color: var(--text-sub); }
+.chapter-title { font-size: 20px; font-weight: 800; text-align: center; margin-bottom: 15px; }
+
+/* CHAPTER NAVIGATION BAR */
+.chap-nav-bar { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; background: var(--bg-card); padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
+.chap-select { background: var(--bg-btn); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 4px; font-size: 13px; outline: none; }
+.btn-nav { background: var(--bg-btn); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn-nav:hover { background: var(--accent-color); }
+.btn-nav:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* READER IMAGES */
+.image-list-container { display: flex; flex-direction: column; align-items: center; gap: 0px; width: 100%; max-width: 800px; margin: 0 auto; min-height: 300px; }
+.image-list-container img { width: 100%; height: auto; display: block; }
+
+/* FOOTER NAV BAR */
+.bottom-nav { margin-top: 25px; margin-bottom: 40px; }
+
+/* FOOTER */
+.footer { background: #181724; border-top: 1px solid var(--border-color); padding: 20px 15px; font-size: 11px; color: var(--text-sub); text-align: center; }
+</style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <div class="header-top">
+    <!-- LOGO SANG MAUBIA_2.HTML -->
+    <div class="logo"><a href="Maubia_2.html"><img src="Hinh/genben-logo.png" alt="Logo"></a></div>
+    <!-- HOME SANG MAUBIA_2.HTML -->
+    <div class="nav-top"><a href="Maubia_2.html">TRANG CHỦ</a></div>
+  </div>
+
+  <div class="reader-container">
+    <!-- BREADCRUMB SANG MAUBIA_2.HTML -->
+    <div class="breadcrumb">
+      <a href="Maubia_2.html">Home</a> / <a id="mangaLink" href="Maubia_2.html">Đang tải...</a> / <span id="chapBreadcrumb">Chapter --</span>
+    </div>
+
+    <!-- Tên truyện & Chapter -->
+    <h1 class="chapter-title" id="mangaChapterTitle">Đang tải chapter...</h1>
+
+    <!-- Thanh chuyển chapter phía trên -->
+    <div class="chap-nav-bar">
+      <button class="btn-nav" id="prevBtnTop" onclick="navigateChapter('prev')">⬅</button>
+      <select class="chap-select" id="chapSelectTop" onchange="onSelectChapter(this.value)"></select>
+      <button class="btn-nav" id="nextBtnTop" onclick="navigateChapter('next')">➔</button>
+    </div>
+
+    <!-- Khu vực hiển thị khung ảnh đọc truyện -->
+    <div class="image-list-container" id="imageList">
+      <p style="padding: 40px; text-align: center; color: var(--text-sub);">Đang tải hình ảnh chapter...</p>
+    </div>
+
+    <!-- Thanh chuyển chapter phía dưới -->
+    <div class="chap-nav-bar bottom-nav">
+      <button class="btn-nav" id="prevBtnBottom" onclick="navigateChapter('prev')">⬅</button>
+      <select class="chap-select" id="chapSelectBottom" onchange="onSelectChapter(this.value)"></select>
+      <button class="btn-nav" id="nextBtnBottom" onclick="navigateChapter('next')">➔</button>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>© 2026 Genben Manga. All rights reserved</div>
+  </div>
+
+  <script type="text/javascript">
+    const SUPABASE_URL = 'https://YOUR_SUPABASE_URL.supabase.co'; 
+    const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; 
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentChapId = null;
+    let currentTruyenId = null;
+    let chapterList = [];
+    let currentIndex = -1;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    currentChapId = urlParams.get('chap_id');
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (currentChapId) {
+        loadChapterData(currentChapId);
+      } else {
+        document.getElementById('mangaChapterTitle').innerText = "Không tìm thấy Chapter!";
+      }
+    });
+
+    async function loadChapterData(chapId) {
+      try {
+        // 1. Lấy thông tin chapter hiện tại
+        const { data: chapData, error: chapError } = await supabaseClient
+          .from('Chapter')
+          .select('*, Truyện(id, ten_truyen)')
+          .eq('id', chapId)
+          .single();
+
+        if (chapError || !chapData) throw chapError;
+
+        currentTruyenId = chapData.truyen_id;
+        const mangaName = chapData.Truyện ? chapData.Truyện.ten_truyen : 'Truyện';
+        
+        // Cập nhật Tiêu đề & Breadcrumb sang Maubia_2.html (hoặc chitiet.html nếu bạn muốn quay về trang thông tin truyện)
+        document.getElementById('mangaLink').href = `Maubia_2.html`;
+        document.getElementById('mangaLink').innerText = mangaName;
+        document.getElementById('chapBreadcrumb').innerText = `Chapter ${chapData.so_chapter}`;
+        document.getElementById('mangaChapterTitle').innerText = `${mangaName} - Chapter ${chapData.so_chapter}`;
+
+        // 2. Tải danh sách hình ảnh của Chapter
+        renderImages(chapData.danh_sach_anh);
+
+        // 3. Lấy toàn bộ danh sách Chapter để tạo dropdown & nút Next/Prev
+        loadAllChaptersOfManga(currentTruyenId, chapId);
+
+      } catch (err) {
+        console.error("Lỗi khi tải dữ liệu chapter:", err);
+        document.getElementById('imageList').innerHTML = '<p style="padding: 20px; color: red;">Không thể tải hình ảnh chapter.</p>';
+      }
+    }
+
+    function renderImages(images) {
+      const container = document.getElementById('imageList');
+      container.innerHTML = '';
+
+      if (!images || images.length === 0) {
+        container.innerHTML = '<p style="padding: 30px; color: var(--text-sub);">Chưa có hình ảnh cho chapter này.</p>';
+        return;
+      }
+
+      let imgArray = Array.isArray(images) ? images : images.split(',').map(s => s.trim());
+
+      imgArray.forEach((url, idx) => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `Trang ${idx + 1}`;
+        img.loading = "lazy";
+        container.appendChild(img);
+      });
+    }
+
+    async function loadAllChaptersOfManga(truyenId, activeChapId) {
+      try {
+        const { data, error } = await supabaseClient
+          .from('Chapter')
+          .select('id, so_chapter')
+          .eq('truyen_id', truyenId)
+          .order('so_chapter', { ascending: true });
+
+        if (error) throw error;
+
+        chapterList = data || [];
+        currentIndex = chapterList.findIndex(item => String(item.id) === String(activeChapId));
+
+        const selectTop = document.getElementById('chapSelectTop');
+        const selectBottom = document.getElementById('chapSelectBottom');
+        selectTop.innerHTML = '';
+        selectBottom.innerHTML = '';
+
+        chapterList.forEach(item => {
+          const opt1 = document.createElement('option');
+          opt1.value = item.id;
+          opt1.innerText = `Chapter ${item.so_chapter}`;
+          if (String(item.id) === String(activeChapId)) opt1.selected = true;
+
+          const opt2 = opt1.cloneNode(true);
+
+          selectTop.appendChild(opt1);
+          selectBottom.appendChild(opt2);
+        });
+
+        document.getElementById('prevBtnTop').disabled = (currentIndex <= 0);
+        document.getElementById('prevBtnBottom').disabled = (currentIndex <= 0);
+        document.getElementById('nextBtnTop').disabled = (currentIndex >= chapterList.length - 1);
+        document.getElementById('nextBtnBottom').disabled = (currentIndex >= chapterList.length - 1);
+
+      } catch (err) {
+        console.error("Lỗi khi tải danh sách chapter:", err);
+      }
+    }
+
+    function onSelectChapter(chapId) {
+      window.location.href = `doctruyen.html?chap_id=${chapId}`;
+    }
+
+    function navigateChapter(direction) {
+      if (direction === 'prev' && currentIndex > 0) {
+        const targetId = chapterList[currentIndex - 1].id;
+        window.location.href = `doctruyen.html?chap_id=${targetId}`;
+      } else if (direction === 'next' && currentIndex < chapterList.length - 1) {
+        const targetId = chapterList[currentIndex + 1].id;
+        window.location.href = `doctruyen.html?chap_id=${targetId}`;
+      }
+    }
+  </script>
+</body>
+</html>

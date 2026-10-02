@@ -1,0 +1,23 @@
+Định hướng tính năng Chuyển nhượng & Phân quyền truyện
+Mô hình phân quyền và quy trình 3 bên (Chủ nhóm hiện tại – Nhóm mới – Admin) cùng luật "Drop 3 tháng" của Kai rất thực tế và chuyên nghiệp. Để vận hành được luồng này về sau, hệ thống sẽ cần các thành phần sau:
+A. Cấu trúc Phân quyền (Roles)
+Trong cơ sở dữ liệu (Database), mỗi tài khoản người dùng sẽ được gắn một quyền cụ thể:
+User / Reader: Chỉ có quyền xem, bình luận, theo dõi truyện.
+Translator / Uploader (Nhóm dịch): Có quyền tạo bộ truyện mới, đăng chapter mới cho các bộ truyện thuộc sở hữu của mình.
+Admin / Moderator: Có toàn quyền duyệt truyện, chuyển quyền sở hữu (Transfer Ownership), khóa tài khoản hoặc can thiệp khi có tranh chấp.
+B. Quy trình Chuyển nhượng 3 Bên (Transfer Workflow)
+Để đảm bảo minh bạch, quy trình trong hệ thống sẽ hoạt động như sau:
+Yêu cầu chuyển nhượng (Initiate Request):
+Nhóm dịch B (bên muốn nhận) gửi một yêu cầu “Xin chuyển quyền dịch” trên hệ thống đối với Bộ truyện X.
+Xác nhận 2 bên (Dual Approval):
+Hệ thống gửi thông báo xác nhận tới Trưởng nhóm A (chủ hiện tại).
+Nếu Nhóm A bấm Đồng ý, yêu cầu sẽ tự động chuyển lên trạng thái Chờ Admin duyệt.
+Admin phê duyệt (Final Approval):
+Admin nhận được thông báo: "Nhóm A và Nhóm B đã đồng ý chuyển nhượng Bộ truyện X".
+Admin bấm Approve \rightarrow Hệ thống cập nhật trường owner_id của Bộ truyện X từ ID của Nhóm A sang ID của Nhóm B.
+C. Luật "Drop 3 tháng" (Inactive Ownership Rule)
+Xử lý tự động/Bán tự động: Hệ thống kiểm tra trường last_updated_at (ngày đăng chapter gần nhất) của bộ truyện.
+Nếu last_updated_at > 90 ngày (3 tháng):
+Nhóm B có thể bấm nút "Báo cáo Drop / Xin tiếp quản".
+Hệ thống tự động gửi thông báo cho Nhóm A (qua Email/Hệ thống) trong vòng 7 ngày để phản hồi.
+Nếu Nhóm A không phản hồi hoặc không đăng chapter mới, yêu cầu chuyển trực tiếp tới Admin. Admin chỉ cần 1 click để duyệt chuyển bộ truyện đó cho Nhóm B mà không cần sự đồng ý của Nhóm A nữa.
